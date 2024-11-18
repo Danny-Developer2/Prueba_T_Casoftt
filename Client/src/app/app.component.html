@@ -1,0 +1,17 @@
+<nav class="navbar navbar-light bg-primary">
+  <div class=container>
+    <a class="navbar-brand fw-bold text-light d-flex align-items-center" href="create">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrzbLCC5g32FJj0xTeCAX1S9m_SKQneXDM7g&s" alt="Icono de un Carro" width="30" height="24"
+           class="d-inline-block align-text-top me-3">
+      Cars
+    </a>
+
+    <div class="d-flex flex-grow-1 justify-content-end">
+      <a class="me-3 btn-link text-light text-decoration-none"
+         [routerLink]="'vehicles'">
+        Vehicles
+      </a>
+    </div>
+  </div>
+</nav>
+<router-outlet></router-outlet>
