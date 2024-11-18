@@ -4,6 +4,7 @@ import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
+  Validators
 } from '@angular/forms';
 import { BadRequest } from '../_models/badRequest';
 import { SelectOption } from '../_models/selectOption';
@@ -33,10 +34,10 @@ type FormType = {
 @Component({
   selector: 'app-vehicle-update',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule,ReactiveFormsModule, CommonModule],
   templateUrl: './vehicle-update.component.html',
 })
-export class VehicleUpdateComponent {
+export class VehicleCreateComponent {
   router = inject(Router);
   error = signal<BadRequest | null>(null);
   toastService = inject(ToastService);
@@ -44,28 +45,27 @@ export class VehicleUpdateComponent {
   url: string | null = null;
   private brandsService = inject(BrandsService);
   service = inject(VehiclesService);
-  showAlert: boolean = false;
+  showAlert: boolean = false;  
   vehicleId: number | null = null; 
-
+  showSuccessAlert: boolean = false;
   route = inject(ActivatedRoute);
 
   brandOptions: SelectOption[] = [];
 
-  form: FormGroup<FormType> = new FormGroup<FormType>({
-    brand: new FormControl<SelectOption | null>(null),
-    model: new FormControl<string | null>(null),
-    year: new FormControl<number | null>(null),
-    color: new FormControl<string | null>(null),
-    photos: new FormArray<FormGroup<PhotoType>>([]),
+    form = new FormGroup<FormType>({
+    brand: new FormControl<SelectOption | null>(null, Validators.required),
+    model: new FormControl<string | null>(null, Validators.required),
+    year: new FormControl<number | null>(null, Validators.required),
+    color: new FormControl<string | null>(null, Validators.required),
+    photos: new FormArray<FormGroup<PhotoType>>([],Validators.required),
   });
+  
 
   submitted = signal<boolean>(false);
 
   constructor() {
 
-    this.vehicleId = this.route.snapshot.paramMap.get('id') ? parseInt(this.route.snapshot.paramMap.get('id')!) : null;
-
-    console.log(this.vehicleId,'soy el id')
+    
     
     
     // Obtener opciones de marcas al inicializar el componente
@@ -150,14 +150,28 @@ export class VehicleUpdateComponent {
   
 
   onSubmit() {
-    console.log('Formulario enviado');
-    console.log(this.vehicleId,this.form.value);
-    this.service.updateVehicle(this.vehicleId,this.form.value)
+      // Llamar al servicio para crear el vehículo
+      this.service.createVehicle(this.form.value);
     
-  }
+      // Mostrar un alert o un mensaje después de que el vehículo sea creado
+      this.showSuccessAlert = true;
+      
+    
+      // Redirigir después de algunos segundos si es necesario
+      setTimeout(() => {
+        this.router.navigate(['/vehicles']);
+      }, 4000);
+    
+    
+}
 
   optionChanged(event: HTMLSelectElement) {
     const value: SelectOption = JSON.parse(event.value);
     this.form.controls.brand.patchValue(value);
+  }
+
+  closeAlert(): void {
+    this.showAlert = false;
+    this.router.navigate(['vehicles']);
   }
 }

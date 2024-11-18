@@ -9,7 +9,6 @@
           class="img-fluid rounded"
         />
       </div>
-      
 
       <!-- Formulario a la derecha -->
       <div class="col-md-8">
@@ -57,6 +56,7 @@
             />
           </div>
 
+          <!-- Foto URL (con validación) -->
           <div formArrayName="photos">
             <div
               *ngFor="let photo of form.controls.photos.controls; let i = index"
@@ -71,6 +71,12 @@
                 placeholder="Ingrese la URL de la foto"
                 class="form-control"
               />
+              <div
+                *ngIf="photo.get('url')?.invalid && photo.get('url')?.touched"
+                class="text-danger"
+              >
+                La URL es requerida.
+              </div>
               <button
                 type="button"
                 (click)="deletePhoto(i)"
@@ -79,8 +85,12 @@
                 Eliminar Foto
               </button>
             </div>
-            <div *ngIf="showAlert" class="alert alert-warning" role="alert">
-              No puedes agregar más de 5 fotos.
+            <div
+              *ngIf="form.get('photos')?.invalid && form.get('photos')?.touched"
+              class="alert alert-warning"
+              role="alert"
+            >
+              Debes agregar al menos una foto.
             </div>
           </div>
 
@@ -100,17 +110,19 @@
             >
               Cancelar
             </button>
-            <br>
-            <br>
+            <br /><br />
             <button
               type="submit"
-              [disabled]="form.invalid"
+              [disabled]="!form.valid"
               class="btn btn-success w-100"
             >
               Guardar Vehículo
             </button>
           </div>
         </form>
+        <div *ngIf="showSuccessAlert" class="alert alert-success">
+          Vehículo creado con éxito.
+        </div>
       </div>
     </div>
   </div>

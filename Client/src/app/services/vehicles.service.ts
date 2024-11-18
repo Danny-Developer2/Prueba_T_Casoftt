@@ -21,6 +21,8 @@ export class VehiclesService {
   params = signal<VehicleParms>(new VehicleParms());
   private router: Router = new Router();
 
+  
+
   resetVehicleParams() {
     this.params.set(new VehicleParms());
   }
@@ -78,7 +80,7 @@ export class VehiclesService {
   }
 
   update(model: any, id: number) {
-    return this.http.put(`${this.baseUrl}${id}`, model).pipe();
+    return this.http.put(`${this.baseUrl}${id}/edit`, model).pipe();
   }
 
   deletePhoto(photo: Photo) {
@@ -87,8 +89,29 @@ export class VehiclesService {
       .pipe();
   }
 
-  createVehicle(vehicleData: any) {
-    return this.http.post(`${this.baseUrl}`, vehicleData).pipe();
+  createVehicle(vehicleData: any ): void  {
+    
+      // Asegúrate de que el objeto updatedVehicle tiene la estructura adecuada
+      this.http
+        .post<any>(`${this.baseUrl}/`, vehicleData, {
+          observe: 'response',
+        })
+        .subscribe(
+          (response) => {
+            console.log('Status code:', response.status);
+            console.log('Response body:', response.body);
+            if (response.status === 200) {
+              console.log('Vehicle updated successfully');
+              this.getVehicles(); // Puedes volver a cargar la lista de vehículos
+              // Lógica adicional como mostrar alertas o redirigir
+            }
+          },
+          (error) => {
+            console.error('Error updating vehicle:', error);
+            console.error('Error status:', error.status); // Para atrapar el código de estado del error
+          }
+        );
+    
   }
   navigateToVehicle1(vehicleId: number | null | undefined) {
     if (vehicleId !== null && vehicleId !== undefined) {
@@ -150,7 +173,7 @@ export class VehiclesService {
     if (vehicleId !== null && vehicleId !== undefined) {
       // Asegúrate de que el objeto updatedVehicle tiene la estructura adecuada
       this.http
-        .put(`${this.baseUrl}/${vehicleId}`, updatedVehicle, {
+        .put(`${this.baseUrl}/${vehicleId}/edit`, updatedVehicle, {
           observe: 'response',
         })
         .subscribe(
@@ -173,6 +196,7 @@ export class VehiclesService {
     }
   }
 
+  
   getVehicleDetails(id: string): Observable<any> {
     const url = `${this.baseUrl}/${id}`;
     return this.http.get<any>(url);
